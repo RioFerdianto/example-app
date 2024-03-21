@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Roles;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class RolesController extends Controller
 {
@@ -37,64 +39,64 @@ class RolesController extends Controller
     public function store(Request $request)
     {
         
-        //isikan kode berikut
-    //     try {
-    //         //cek apakah request berisi nama_role atau tidak
-    //         $validator = Validator::make($request->all(), [
-    //             'nama_role' => 'required|string|max:255|unique:roles',
-    //         ]);
+        // isikan kode berikut
+        try {
+            //cek apakah request berisi nama_role atau tidak
+            $validator = Validator::make($request->all(), [
+                'nama_role' => 'required|string|max:255|unique:roles',
+            ]);
             
-    //         //kalau tidak akan mengembalikan error
-    //         if ($validator->fails()) {
-    //             return response()->json($validator->errors());
-    //         }
+            //kalau tidak akan mengembalikan error
+            if ($validator->fails()) {
+                return response()->json($validator->errors());
+            }
             
-    //         //kalau ya maka akan membuat roles baru
-    //         $data = Roles::create([
-    //             'nama_role' => $request->nama_role,
-    //         ]);
+            //kalau ya maka akan membuat roles baru
+            $data = Roles::create([
+                'nama_role' => $request->nama_role,
+            ]);
             
-    //         //data akan di kirimkan dalam bentuk response list
-    //         $response = [
-    //             'success' => true,
-    //             'data' => $data,
-    //             'message' => 'Data berhasil di simpan',
-    //         ];
+            //data akan di kirimkan dalam bentuk response list
+            $response = [
+                'success' => true,
+                'data' => $data,
+                'message' => 'Data berhasil di simpan',
+            ];
             
-    //         //jika berhasil maka akan mengirimkan status code 200
-    //         return response()->json($response, 200);
-    //     } catch (Exception $th) {
-    //         $response = [
-    //             'success' => false,
-    //             'message' => $th,
-    //         ];
-    //         //jika error maka akan mengirimkan status code 500
-    //         return response()->json($response, 500);
-    //     }
+            //jika berhasil maka akan mengirimkan status code 200
+            return response()->json($response, 200);
+        } catch (Exception $th) {
+            $response = [
+                'success' => false,
+                'message' => $th,
+            ];
+            //jika error maka akan mengirimkan status code 500
+            return response()->json($response, 500);
+        }
     
-    // }
+    }
 
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(Roles $id)
-    // {
-    //     try {
-    //         $data = Roles::find($id);
-    //         $response = [
-    //             'success' => true,
-    //             'data' => $data,
-    //             'message' => 'Data tersedia',
-    //         ];
+    /**
+     * Display the specified resource.
+     */
+    public function show( $id)
+    {
+        try {
+            $data = Roles::find($id);
+            $response = [
+                'success' => true,
+                'data' => $data,
+                'message' => 'Data tersedia',
+            ];
 
-    //         return response()->json($response, 200);
-    //     } catch (Exception $th) {
-    //         $response = [
-    //             'success' => false,
-    //             'message' => $th,
-    //         ];
-    //         return response()->json($response, 500);
-    //     }
+            return response()->json($response, 200);
+        } catch (Exception $th) {
+            $response = [
+                'success' => false,
+                'message' => $th,
+            ];
+            return response()->json($response, 500);
+        }
 
     }
 

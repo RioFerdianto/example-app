@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('setting_roles', function (Blueprint $table) {
             $table->id();
-            //tambahkan baris ini
-            $table->string('nama_role');
-            //
+            $table->foreignId('users_id');
+            $table->foreignId('roles_id');
             $table->timestamps();
         });
     }
@@ -25,7 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('setting_roles');
     }
 };
-

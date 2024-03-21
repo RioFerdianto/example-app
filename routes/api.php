@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\RolesController;
+use App\Http\Controllers\API\SettingRolesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,5 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/change-password', [AuthController::class, 'change_password']);
     Route::post('/search-user', [AuthController::class, 'search']);
 
-    Route::resource('Roles', RolesController::class);
+    
+    Route::resource('roles', RolesController::class);
+    Route::resource('setting_roles', SettingRolesController::class);
 });
