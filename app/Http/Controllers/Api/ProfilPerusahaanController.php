@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SettingRoles;
+use App\Models\ProfilPerusahaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SettingRolesController extends Controller
+class ProfilPerusahaanController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        try {$data = SettingRoles::all();
+        try {
+            $data = ProfilPerusahaan::all();
             $response = [
                 'success' => true,
                 'data' => $data,
@@ -27,7 +28,8 @@ class SettingRolesController extends Controller
                 'success' => false,
                 'message' => $th,
             ];
-            return response()->json($response, 500);}
+            return response()->json($response, 500);
+        }
     }
 
     /**
@@ -38,8 +40,11 @@ class SettingRolesController extends Controller
         try {
             //cek apakah request berisi nama_role atau tidak
             $validator = Validator::make($request->all(), [
-                'users_id' => 'required',
-                'roles_id' => 'required',
+                'nama_perusahaan' => 'required|string|max:100|unique:profil_perusahaan',
+                'deskripsi' => 'required',
+                'lokasi' => 'required',
+                'jam_masuk' => 'required',
+                'jam_pulang' => 'required',
             ]);
             
             //kalau tidak akan mengembalikan error
@@ -48,16 +53,20 @@ class SettingRolesController extends Controller
             }
             
             //kalau ya maka akan membuat roles baru
-            $data = SettingRoles::create([
-                'users_id' => $request->users_id,
-                'roles_id' => $request->roles_id,
+            $data = ProfilPerusahaan::create([
+                'nama_perusahaan' => $request->nama_perusahaan,
+                'lokasi' => $request->lokasi,
+                'deskripsi' => $request->deskripsi,
+                'jam_masuk' => $request->jam_masuk,
+                'jam_pulang' => $request->jam_pulang,
+                'image' => $request->image,
             ]);
             
             //data akan di kirimkan dalam bentuk response list
             $response = [
                 'success' => true,
                 'data' => $data,
-                'message' => 'Data berhasil di simpan',
+                'message' => 'Profil Perusahaan berhasil disimpan',
             ];
             
             //jika berhasil maka akan mengirimkan status code 200
@@ -70,34 +79,33 @@ class SettingRolesController extends Controller
             //jika error maka akan mengirimkan status code 500
             return response()->json($response, 500);
         }
-    
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(SettingRoles $id)
+    public function show($id)
     {
         try {
-            $data = SettingRoles::find($id);
+            $data = ProfilPerusahaan::find($id);
             if ($data == null){
                 $response = [
                     'success' => false,
-                    'message' => 'ID Tidak Ditemukan',
+                    'message' => 'Perusahaan Tidak Ditemukan',
                 ];
                 return response()->json($response, 500);
             }
             $response = [
                 'success' => true,
                 'data' => $data,
-                'message' => 'Selamat Datang, Admin',
+                'message' => 'Selamat Datang, PT Contoh',
             ];
 
             return response()->json($response, 200);
         } catch (Exception $th) {
             $response = [
                 'success' => false,
-                'message' => 'ID Tidak Ditemukan',
+                'message' => 'Perusahaan Tidak Ditemukan',
             ];
             return response()->json($response, 500);
         }
@@ -110,30 +118,36 @@ class SettingRolesController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'users_id' => 'required',
-                'roles_id' => 'required',
-            ]);
+                'nama_perusahaan' => 'required',
+                'deskripsi' => 'required',
+                'lokasi' => 'required',
+                'jam_masuk' => 'required',
+                'jam_pulang' => 'required',
+                            ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors());
             }
 
-            $data = SettingRoles::find($id);
-            $data->users_id = $request->users_id;
-            $data->roles_id = $request->roles_id;
+            $data = ProfilPerusahaan::find($id);
+            $data->nama_perusahaan = $request->nama_perusahaan;
+            $data->deskripsi = $request->deskripsi;
+            $data->lokasi = $request->lokasi;
+            $data->jam_masuk = $request->jam_masuk;
+            $data->jam_pulang = $request->jam_pulang;
             $data->save();
 
             $response = [
                 'success' => true,
                 'data' => $data,
-                'message' => 'ID Role berhasil diubah',
+                'message' => 'Data Perusahaan berhasil diubah',
             ];
 
             return response()->json($response, 200);
         } catch (Exception $th) {
             $response = [
                 'success' => false,
-                'message' => $th,
+                'message' => 'Data Perusahaan tidak Ditemukan',
             ];
             return response()->json($response, 500);
         }
@@ -145,14 +159,14 @@ class SettingRolesController extends Controller
     public function destroy($id)
     {
         try {
-            $save = SettingRoles::find($id);
+            $save = ProfilPerusahaan::find($id);
             if ($save == null) {
                 return response()->json(['success' => false, 'message' => 'Periksa kembali data yang akan di hapus'], 404);
             }
             $save->delete();
             $response = [
                 'success' => true,
-                'message' => 'ID Role berhasil dihapus',
+                'message' => 'ID Perusahaan berhasil dihapus',
             ];
             return response()->json($response, 200);
         } catch (Exception $th) {
@@ -162,5 +176,7 @@ class SettingRolesController extends Controller
             ];
             return response()->json($response, 500);
         }
+
+    }
     }
 }
