@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ProfilPerusahaan extends Model
 {
     use HasFactory;
+    protected $table = 'profil_perusahaan';
+    protected $fillable = [
+        'nama_perusahaan',
+        'deskripsi',
+        'lokasi',
+        'jam_masuk',
+        'jam_pulang',
+        'image',
+    ];
 }

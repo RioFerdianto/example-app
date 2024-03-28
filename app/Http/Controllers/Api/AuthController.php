@@ -34,6 +34,7 @@ class AuthController extends Controller
         return response()
             ->json(['data' => $user, 'access_token' => $token]);
     }
+
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
@@ -48,15 +49,18 @@ class AuthController extends Controller
         return response()
             ->json(['success' => true, 'message' => 'Hi ' . $user->name . ', welcome to Siakad Politeknik Takumi', 'access_token' => $token, 'email' => $user->email]);
     }
+
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
+        //auth()->user()->tokens()->delete();
 
         return response()
             ->json(['success' => true,
                 'message' => 'Thank You.',
             ]);
     }
+
     public function change_password(Request $request)
     {
         if (!(Hash::check($request->get('current_password'), Auth::user()->password))) {
@@ -89,6 +93,7 @@ class AuthController extends Controller
             ]);
 
     }
+
     public function search(Request $request)
     {
         try {
@@ -106,6 +111,13 @@ class AuthController extends Controller
             ];
             return response()->json($response, 500);
         }
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
     }
 
     /**

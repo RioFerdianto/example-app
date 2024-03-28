@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProfilPerusahaan;
+use App\Models\Absen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ProfilPerusahaanController extends Controller
+class AbsenController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,11 +15,11 @@ class ProfilPerusahaanController extends Controller
     public function index()
     {
         try {
-            $data = ProfilPerusahaan::all();
+            $data = Absen::all();
             $response = [
                 'success' => true,
                 'data' => $data,
-                'message' => 'Data tersedia',
+                'message' => 'Data Absen tersedia',
             ];
 
             return response()->json($response, 200);
@@ -38,74 +38,75 @@ class ProfilPerusahaanController extends Controller
     public function store(Request $request)
     {
         try {
-            //cek apakah request berisi nama_role atau tidak
             $validator = Validator::make($request->all(), [
-                'nama_perusahaan' => 'required|string|max:100|unique:profil_perusahaan',
-                'deskripsi' => 'required',
-                'lokasi' => 'required',
-                'jam_masuk' => 'required',
-                'jam_pulang' => 'required',
-            ]);
-            
-            //kalau tidak akan mengembalikan error
-            if ($validator->fails()) {
-                return response()->json($validator->errors());
-            }
-            
+                'users_id' => 'required',
+                'lokasi_user' => 'required',
+                'waktu_absen_masuk' => 'required',
+                'tanggal_hari_ini' => 'required',
+            ]);           
+                        
             //kalau ya maka akan membuat roles baru
-            $data = ProfilPerusahaan::create([
-                'nama_perusahaan' => $request->nama_perusahaan,
-                'lokasi' => $request->lokasi,
-                'deskripsi' => $request->deskripsi,
-                'jam_masuk' => $request->jam_masuk,
-                'jam_pulang' => $request->jam_pulang,
-                'image' => $request->image,
-            ]);
-            
+            $data = Absen::create([
+                'users_id' => $request->users_id,
+                'lokasi_user' => $request->lokasi_user,
+                'waktu_absen_masuk' => $request->waktu_absen_masuk,
+                'waktu_absen_pulang' => $request->waktu_absen_pulang,
+                'tanggal_hari_ini' => $request->tanggal_hari_ini,
+            ]);                     
+                        
             //data akan di kirimkan dalam bentuk response list
             $response = [
                 'success' => true,
                 'data' => $data,
-                'message' => 'Profil Perusahaan berhasil disimpan',
-            ];
-            
+                'message' => 'Absen Masuk Berhasil',
+            ]; 
+
+            // $data = Absen::find($id);
+            // if ($data['waktu_absen_masuk']!= null){                
+            //     $response = [
+            //         'success' => false,
+            //         'message' => 'Anda Sudah Absen Masuk',
+            //     ];
+            //     return response()->json($response, 500);
+            // }
+            // $data->delete();
             //jika berhasil maka akan mengirimkan status code 200
             return response()->json($response, 200);
         } catch (Exception $th) {
             $response = [
                 'success' => false,
-                'message' => 'Gagal Menyimpan Data',
+                'message' => 'Gagal Absen Masuk',
             ];
             //jika error maka akan mengirimkan status code 500
             return response()->json($response, 500);
-        }
+        } 
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Absen $id)
     {
         try {
-            $data = ProfilPerusahaan::find($id);
+            $data = Absen::find($id);
             if ($data == null){
                 $response = [
                     'success' => false,
-                    'message' => 'Perusahaan Tidak Ditemukan',
+                    'message' => 'Data Absen Tidak Ditemukan',
                 ];
                 return response()->json($response, 500);
             }
             $response = [
                 'success' => true,
                 'data' => $data,
-                'message' => 'Selamat Datang, PT Contoh',
+                'message' => 'Selamat Datang, User',
             ];
 
             return response()->json($response, 200);
         } catch (Exception $th) {
             $response = [
                 'success' => false,
-                'message' => 'Perusahaan Tidak Ditemukan',
+                'message' => 'Data Absen Tidak Ditemukan',
             ];
             return response()->json($response, 500);
         }
@@ -114,40 +115,53 @@ class ProfilPerusahaanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Absen $id)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'nama_perusahaan' => 'required',
-                'deskripsi' => 'required',
-                'lokasi' => 'required',
-                'jam_masuk' => 'required',
-                'jam_pulang' => 'required',
+            $validator = Validator::make($request->all(), [                              
+                'tanggal_hari_ini' => 'required',
+                'waktu_absen_pulang' => 'required',
                             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors());
             }
 
-            $data = ProfilPerusahaan::find($id);
-            $data->nama_perusahaan = $request->nama_perusahaan;
-            $data->deskripsi = $request->deskripsi;
-            $data->lokasi = $request->lokasi;
-            $data->jam_masuk = $request->jam_masuk;
-            $data->jam_pulang = $request->jam_pulang;
+            //cek apakah tanggal dari $data = database itu sama dengan tanggal yang dikirimkan oleh user
+            $data = Absen::find($id);
+            if ($data['tanggal_hari_ini']!= $request -> tanggal_hari_ini){
+                $response = [
+                    'success' => false,
+                    'message' => 'Tanggal Absen Pulang Tidak Sesuai Dengan Tanggal Absen Masuk',
+                ];
+                return response()->json($response, 500);
+            }
+
+            //cek apakah user sudah absen pulang atau belum, jikas sudah maka muncul notif di bawah
+            $data = Absen::find($id);
+            if ($data['waktu_absen_pulang'] != null){
+                $response = [
+                    'success' => false,
+                    'message' => 'Absen Pulang Sudah Dilakukan',
+                ];
+                return response()->json($response, 500);
+            }
+
+
+            $data->waktu_absen_pulang = $request->waktu_absen_pulang;            
             $data->save();
 
             $response = [
                 'success' => true,
                 'data' => $data,
-                'message' => 'Data Perusahaan berhasil diubah',
+                'message' => 'Berhasil Absen Pulang',
             ];
 
             return response()->json($response, 200);
         } catch (Exception $th) {
             $response = [
                 'success' => false,
-                'message' => 'Data Perusahaan tidak Ditemukan',
+                'message' => 'Gagal Absen Pulang',
             ];
             return response()->json($response, 500);
         }
@@ -156,17 +170,17 @@ class ProfilPerusahaanController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Absen $id)
     {
         try {
-            $save = ProfilPerusahaan::find($id);
+            $save = Absen::find($id);
             if ($save == null) {
                 return response()->json(['success' => false, 'message' => 'Periksa kembali data yang akan di hapus'], 404);
             }
             $save->delete();
             $response = [
                 'success' => true,
-                'message' => 'ID Perusahaan berhasil dihapus',
+                'message' => 'Data Absen berhasil dihapus',
             ];
             return response()->json($response, 200);
         } catch (Exception $th) {
@@ -176,7 +190,5 @@ class ProfilPerusahaanController extends Controller
             ];
             return response()->json($response, 500);
         }
-
     }
 }
-
