@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\RolesController;
 use App\Http\Controllers\API\SettingRolesController;
 use App\Http\Controllers\API\ProfilPerusahaanController;
+use App\Http\Controllers\API\AbsenController;
 
 /*
 |--------------------------------------------------------------------------

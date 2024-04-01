@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('absen', function (Blueprint $table) {
             $table->id();
+            //tambahkan 6 table di bawah ini
             $table->foreignId('users_id');
             $table->text('lokasi_user');
             $table->string('waktu_absen_masuk', length: 100);
             $table->string('waktu_absen_pulang', length: 100)->nullable();
             $table->string('tanggal_hari_ini', length: 100);
+            $table->string('status', length: 100);
             $table->timestamps();
         });
     }
